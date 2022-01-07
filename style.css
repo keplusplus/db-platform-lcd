@@ -1,0 +1,78 @@
+@font-face {
+    font-family: lcd;
+    src: url(subwt.ttf);
+}
+
+body {
+    margin: 0px;
+    font-family: lcd;
+    background-color: rgb(20, 20, 20);
+    color: rgb(240, 240, 240);
+}
+
+p {
+    margin: 0px;
+}
+
+.container {
+    width: 1200px;
+    height: 480px;
+    padding: 8px;
+    background-color: rgb(0, 41, 131);
+}
+
+.upper, .lower {
+    width: 1200px;
+    height: 240px;
+    display: flex;
+}
+
+.lower {
+    flex-direction: column;
+    justify-content: flex-end;
+    font-size: 36px;
+}
+
+.platform {
+    width: 250px;
+    font-size: 96px;
+}
+
+.destination {
+    align-self: flex-end;
+    flex-grow: 1;
+}
+
+.time-and-train {
+    text-align: end;
+}
+
+.depature-time {
+    font-size: 52px;
+}
+
+.train-number {
+    font-size: 24px;
+}
+
+.stops {
+    font-size: 36px;
+}
+
+.final-stop {
+    font-size: 72px;
+}
+
+.following {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.bg-white {
+    background-color: rgb(240, 240, 240);
+    color: rgb(20, 20, 20);
+}
+
+.fz-table tr {
+    background-color: white;
+}
