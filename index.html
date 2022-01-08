@@ -6,39 +6,40 @@
         <link rel="stylesheet" type="text/css" href="style.css" />
     </head>
     <body>
-        <div class="container">
-            <div class="upper">
-                <div class="platform"><p>2</p></div>
-                <div class="destination">
-                    <p class="stops">Leipzig Hbf - Halle(Saale) Hbf</p>
-                    <p class="final-stop">Hannover Hbf</p>
+        <div class="frame">
+            <div class="container">
+                <div class="upper">
+                    <div class="platform"><p id="p">1</p></div>
+                    <div class="destination">
+                        <p class="stops" id="stops"></p>
+                        <p class="final-stop" id="dest"></p>
+                    </div>
+                    <div class="time-and-train">
+                        <p class="depature-time" id="dt"></p>
+                        <p class="train-number" id="tn"></p>
+                    </div>
                 </div>
-                <div class="time-and-train">
-                    <p class="depature-time">17:20</p>
-                    <p class="train-number">IC 2446</p>
+                <div class="lower">
+                    <div class="folgezuege">Folgezüge</div>
+
+                    <div class="box l2" id="fz1-dep"></div>
+                    <div class="box l2 annotation" id="fz1-del"></div>
+                    <div class="box l2" id="fz1-tn"></div>
+                    <div class="box l2" id="fz1-dest"></div>
+                    <div class="box l2 annotation" id="fz1-plat"></div>
+                    
+                    <div class="box l3" id="fz2-dep"></div>
+                    <div class="box l3 annotation" id="fz2-del"></div>
+                    <div class="box l3" id="fz2-tn"></div>
+                    <div class="box l3" id="fz2-dest"></div>
+                    <div class="box l3 annotation" id="fz2-plat"></div>
                 </div>
             </div>
-            <div class="lower">
-                <div class="lower-title"><p class="following">Folgezuege</p></div>
-                <table class="fz-table">
-                    <tr>
-                        <td><p>17:08</p></td>
-                        <td class="bg-white"><p>+5</p></td>
-                        <td><p>RB31</p></td>
-                        <td><p>Elsterw-Biehla</p></td>
-                        <td class="bg-white"><p>Gleis 1</p></td>
-                    </tr>
-                    <tr>
-                        <td><p>17:44</p></td>
-                        <td class="bg-white"></td>
-                        <td><p>RB31</p></td>
-                        <td><p>von Coswig (b. Dresden)</p></td>
-                        <td class="bg-white"></td>
-                    </tr>
-                </table>
-            </div>
+
+            <div class="bar"></div>
         </div>
 
-        <script src="app.js"></script>
+        <script src="data.js" type="text/javascript"></script>
+        <script src="app.js" type="text/javascript"></script>
     </body>
 </html>
