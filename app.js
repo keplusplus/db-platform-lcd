@@ -1,35 +1,48 @@
+let updateCounter;
+let station;
+let platform;
 
-const platform = document.getElementById('p');
+const platformD = document.getElementById('p');
 const stops = document.getElementById('stops');
 const destination = document.getElementById('dest');
-const depatureTime = document.getElementById('dt');
+const departureTime = document.getElementById('dt');
 const trainNumber = document.getElementById('tn');
-const folgezug1DepatureTime = document.getElementById('fz1-dep');
+const annotationString = document.getElementById('as');
+const folgezug1DepartureTime = document.getElementById('fz1-dep');
 const folgezug1Delay = document.getElementById('fz1-del');
 const folgezug1TrainNumber = document.getElementById('fz1-tn');
 const folgezug1Destination = document.getElementById('fz1-dest');
 const folgezug1Platform = document.getElementById('fz1-plat');
-const folgezug2DepatureTime = document.getElementById('fz2-dep');
+const folgezug2DepartureTime = document.getElementById('fz2-dep');
 const folgezug2Delay = document.getElementById('fz2-del');
 const folgezug2TrainNumber = document.getElementById('fz2-tn');
 const folgezug2Destination = document.getElementById('fz2-dest');
 const folgezug2Platform = document.getElementById('fz2-plat');
 
+const bar = document.getElementById('bar');
+
+const inputDs100 = document.getElementById('input-ds100');
+const inputPlatform = document.getElementById('input-platform');
+const buttonUpdate = document.getElementById('button-update');
+
 function setPlatform(p) {
-    platform.innerHTML = p;
+    platformD.innerHTML = p;
 }
 
-function setTrain(tn, dest, st, dt) {
+function setTrain(tn, dest, st, dt, as = '') {
     trainNumber.innerHTML = tn;
     destination.innerHTML = dest;
     stops.innerHTML = st;
-    depatureTime.innerHTML = dt;
+    departureTime.innerHTML = dt;
+    annotationString.innerHTML = as;
+    if(String(as).length < 1) annotationString.classList.remove('bg-w');
+    else annotationString.classList.add('bg-w');
 }
 
 function setFz1(tn, dest, dt, del, plat) {
     folgezug1TrainNumber.innerHTML = tn;
     folgezug1Destination.innerHTML = dest;
-    folgezug1DepatureTime.innerHTML = dt;
+    folgezug1DepartureTime.innerHTML = dt;
     folgezug1Delay.innerHTML = del;
     if(!del) folgezug1Delay.classList.remove('bg-w');
     else folgezug1Delay.classList.add('bg-w');
@@ -45,7 +58,7 @@ function clearFz1() {
 function setFz2(tn, dest, dt, del, plat) {
     folgezug2TrainNumber.innerHTML = tn;
     folgezug2Destination.innerHTML = dest;
-    folgezug2DepatureTime.innerHTML = dt;
+    folgezug2DepartureTime.innerHTML = dt;
     folgezug2Delay.innerHTML = del;
     if(!del) folgezug2Delay.classList.remove('bg-w');
     else folgezug2Delay.classList.add('bg-w');
@@ -57,8 +70,6 @@ function setFz2(tn, dest, dt, del, plat) {
 function clearFz2() {
     setFz2('', '', '', '', '');
 }
-
-console.log("Depature board initalization");
 
 function test1() {
     setPlatform(22);
@@ -100,16 +111,16 @@ async function start() {
     test2v3();
 }
 
-function fetch(url) {
+function fetch(url, platform) {
     const request = new XMLHttpRequest();
 
     if(!request) return {};
 
     request.onreadystatechange = () => {
         if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
-            return JSON.parse(request.responseText);
-        } else {
-            console.log('error');
+            const res = JSON.parse(request.responseText);
+            setDepartures(res, platform);
+            return res;
         }
     }
 
@@ -119,26 +130,57 @@ function fetch(url) {
     return {};
 }
 
-function fetchMock() {
+function fetchMock(platform) {
+    setDepartures(data, platform);
     return data;
 }
 
-function fetchData() {
-    return fetch('https://dbf.finalrewind.org/Altenbeken?mode=json&version=3&limit=20');
+function fetchData(station, platform) {
+    setPlatform(platform);
+    return fetch(`https://dbf.finalrewind.org/${station}?mode=json&version=3`, platform);
 } 
 
 function getDelay(t) {
     if(t['scheduledDeparture']) {
-        if(t['delayDeparture']) {
-            return '+' + t['delayDeparture'];
+        if(t['delayDeparture'] && Math.round(t['delayDeparture'] / 5) > 0) {
+            return '+' + Math.round(t['delayDeparture'] / 5) * 5;
         }
     } else {
-        if(t['delayArrival']) {
-            return '+' + t['delayArrival'];
+        if(t['delayArrival'] && Math.round(t['delayArrival'] / 5) > 0) {
+            return '+' + Math.round(t['delayArrival'] / 5) * 5;
         }
     }
 
     return '';
+}
+
+function getVias(via) {
+    let s = '';
+    if(via[0]) s += via[0];
+    if(via[1]) s += ' - ' + via[1];
+    return s;
+}
+
+function getAnnotationString(t) {
+    let s = '';
+    const delay = String(getDelay(t)).substring(1);
+    if(delay) s += `Verspätung ca. ${delay} Min.`
+
+    if(t['platform'] != t['scheduledPlatform']) {
+        if(s !== '') s += ' - '
+        s += 'Heute Gleis ' + t['platform']
+    }
+
+    if(!t['scheduledDeparture']) {
+        if(s !== '') s += ' - '
+        s += 'Bitte nicht einsteigen!';
+    }
+    return s;
+}
+
+function getDestination(t) {
+    if(!t['scheduledDeparture']) return `von ${t['route'][0]['name']}`;
+    return t['destination'];
 }
 
 function setDepartures(d, p) {
@@ -147,10 +189,10 @@ function setDepartures(d, p) {
     const t1 = filtered[0];
     const t2 = filtered[1];
     const t3 = filtered[2];
-    setPlatform(p);
-    setTrain(fixTrainNumber(t1['train']), t1['destination'], t1['via'][0], t1['scheduledDeparture'] ? t1['scheduledDeparture'] : t1['scheduledArrival']);
-    setFolgezug(setFz1, t2);
-    setFolgezug(setFz2, t3);
+    p ? setPlatform(p) : setPlatform('');
+    t1 ? setTrain(fixTrainNumber(t1['train']), getDestination(t1), getVias(t1['via']), t1['scheduledDeparture'] ? t1['scheduledDeparture'] : t1['scheduledArrival'], getAnnotationString(t1)): setTrain('', '', '', '', '');
+    t2 ? setFolgezug(setFz1, t2) : setFz1('', '', '', '', '');
+    t3 ? setFolgezug(setFz2, t3) : setFz2('', '', '', '', '');;
 }
 
 function setFolgezug(setFunction, t) {
@@ -165,4 +207,50 @@ function fixTrainNumber(train) {
     return String(train).replace(' ', '');
 }
 
-setDepartures(fetchMock(), 21);
+function initForm() {
+    buttonUpdate.addEventListener('click', () => {
+        station = inputDs100.value;
+        platform = inputPlatform.value;
+        updateCookie();
+        updateCounter = 100;
+    })
+}
+
+function updateCookie() {
+    const values = { station, platform };
+    const expiry = new Date();
+    expiry.setMonth(expiry.getMonth() + 6);
+    if(!station || !platform) expiry.setTime(0);
+    const cookie = `stationMonitorData=${JSON.stringify(values)}; expires=${expiry.toUTCString()}`
+    document.cookie = cookie;
+}
+
+function loadCookie() {
+    console.log(document.cookie);
+    const cookie = String(document.cookie.split(';').filter(v => v.includes('stationMonitorData')));
+    if(!cookie) return;
+    const json = cookie.substring(cookie.indexOf('=') + 1);
+    const values = JSON.parse(json);
+    if(values['station'] && values['platform']) {
+        station = values['station'];
+        platform = values['platform'];
+    }
+}
+
+async function update() {
+    initForm();
+    setPlatform(platform ? platform : '');
+    updateCounter = 98.0;
+    while(true) {
+        if(updateCounter >= 100.0) {
+            updateCounter = 0.0;
+            if(station && platform) fetchData(station, platform);
+        }
+        bar.setAttribute('style', `width: ${updateCounter}%;`);
+        await sleep(30);
+        updateCounter += 0.025;
+    }
+}
+
+loadCookie();
+update();

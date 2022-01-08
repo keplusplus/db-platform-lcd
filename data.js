@@ -86,7 +86,7 @@ const data = {
       ],
       "scheduledArrival": "15:54",
       "scheduledDeparture": "15:56",
-      "scheduledPlatform": "21",
+      "scheduledPlatform": "22",
       "train": "IC 2152",
       "trainClasses": [
         "F"
@@ -422,7 +422,7 @@ const data = {
       ],
       "scheduledArrival": null,
       "scheduledDeparture": "16:13",
-      "scheduledPlatform": "1",
+      "scheduledPlatform": "2",
       "train": "RE 82",
       "trainClasses": [
         "N"
@@ -436,7 +436,7 @@ const data = {
     },
     {
       "delayArrival": 0,
-      "delayDeparture": 12,
+      "delayDeparture": 1,
       "destination": "Hannover Flughafen",
       "isCancelled": 0,
       "messages": {
