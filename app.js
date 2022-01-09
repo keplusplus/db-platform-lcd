@@ -159,6 +159,7 @@ function getDestination(t) {
 
 function setDepartures(d, p) {
     const departures = d.departures;
+    if(!departures) return;
     departures.sort((e1, e2) => {
         const dep1 = e1['scheduledDeparture'] ? e1['scheduledDeparture'].split(':') : e1['scheduledArrival'].split(':');
         const dep2 = e2['scheduledDeparture'] ? e2['scheduledDeparture'].split(':') : e2['scheduledArrival'].split(':');
@@ -183,14 +184,20 @@ function setDepartures(d, p) {
     p ? setPlatform(p) : setPlatform('');
     t1 ? setTrain(fixTrainNumber(t1['train']), getDestination(t1), getVias(t1['via']), t1['scheduledDeparture'] ? t1['scheduledDeparture'] : t1['scheduledArrival'], getAnnotationString(t1)): setTrain('', '', '', '', '');
     t2 ? setFolgezug(setFz1, t2) : setFz1('', '', '', '', '');
-    t3 ? setFolgezug(setFz2, t3) : setFz2('', '', '', '', '');;
+    t3 ? setFolgezug(setFz2, t3) : setFz2('', '', '', '', '');
+}
+
+function getFolgezugAnnotation(t) {
+    if(t['isCancelled']) return 'Gleis ' + t['platform'];
+    if(t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) return 'Gleis ' + t['platform'];
+    return '';
 }
 
 function setFolgezug(setFunction, t) {
     setFunction(    fixTrainNumber(t['train']),
                     t['scheduledDeparture'] ? String(t['destination']).substring(0, 19) : 'von ' + String(t['route'][0]['name']).substring(0, 15),
                     t['scheduledDeparture'] ? t['scheduledDeparture'] : t['scheduledArrival'],
-                    getDelay(t), t['platform'] != t['scheduledPlatform'] && t['platform'] != platform ? 'Gleis ' + t['platform'] : '');
+                    getDelay(t), getFolgezugAnnotation(t));
 }
 
 function fixTrainNumber(train) {
