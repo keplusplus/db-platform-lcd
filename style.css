@@ -6,6 +6,7 @@
 body {
     margin: 0px;
     /* font-family: lcd; */
+    font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(20, 20, 20);
     color: rgb(240, 240, 240);
     letter-spacing: -2px;

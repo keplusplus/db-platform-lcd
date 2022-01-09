@@ -209,7 +209,7 @@ function fixTrainNumber(train) {
 
 function initForm() {
     buttonUpdate.addEventListener('click', () => {
-        station = inputDs100.value;
+        station = String(inputDs100.value).toUpperCase();
         platform = inputPlatform.value;
         updateCookie();
         updateCounter = 100;
@@ -221,12 +221,11 @@ function updateCookie() {
     const expiry = new Date();
     expiry.setMonth(expiry.getMonth() + 6);
     if(!station || !platform) expiry.setTime(0);
-    const cookie = `stationMonitorData=${JSON.stringify(values)}; expires=${expiry.toUTCString()}`
+    const cookie = `stationMonitorData=${JSON.stringify(values)}; expires=${expiry.toUTCString()}; SameSite=Lax`
     document.cookie = cookie;
 }
 
 function loadCookie() {
-    console.log(document.cookie);
     const cookie = String(document.cookie.split(';').filter(v => v.includes('stationMonitorData')));
     if(!cookie) return;
     const json = cookie.substring(cookie.indexOf('=') + 1);
