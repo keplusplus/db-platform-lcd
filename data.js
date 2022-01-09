@@ -131,7 +131,7 @@ const data = {
       ],
       "scheduledArrival": "15:47",
       "scheduledDeparture": null,
-      "scheduledPlatform": "21",
+      "scheduledPlatform": "1",
       "train": "RE 82",
       "trainClasses": [
         "N"
@@ -141,7 +141,7 @@ const data = {
     },
     {
       "delayArrival": 0,
-      "delayDeparture": 0,
+      "delayDeparture": 12,
       "destination": "Paderborn Hbf",
       "isCancelled": 0,
       "messages": {

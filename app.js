@@ -71,44 +71,8 @@ function clearFz2() {
     setFz2('', '', '', '', '');
 }
 
-function test1() {
-    setPlatform(22);
-    setTrain('IC 2157', 'Gera Hbf', 'Warburg - KS-Wilhelmshöhe', '18:04');
-    clearFz1();
-    clearFz2();
-}
-
-function test2v1() {
-    setPlatform(9);
-    setTrain('ICE 372', 'Berlin Ostbahnhof', 'Fulda - KS-Wilhelmshöhe', '11:14');
-    setFz1('ICE 595', 'München Hbf', '11:50', '+15', '');
-    setFz2('ICE 27', 'Wien Hbf', '12:22', '', '');
-}
-
-function test2v2() {
-    setPlatform(9);
-    setTrain('', '', '', '');
-    setFz1('ICE 595', 'München Hbf', '11:50', '+15', '');
-    setFz2('ICE 27', 'Wien Hbf', '12:22', '', '');
-}
-
-function test2v3() {
-    setPlatform(9);
-    setTrain('ICE 595', 'München Hbf', 'Mannheim - Stuttgart', '11:50');
-    setFz1('ICE 27', 'Wien Hbf', '12:22', '', '');
-    clearFz2();
-}
-
 function sleep(ms) {
     return new Promise(r => setTimeout(r, ms))
-}
-
-async function start() {
-    test2v1();
-    await sleep(5000);
-    test2v2();
-    await sleep(1840);
-    test2v3();
 }
 
 function fetch(url, platform) {
@@ -164,15 +128,25 @@ function getVias(via) {
 function getAnnotationString(t) {
     let s = '';
     const delay = String(getDelay(t)).substring(1);
-    if(delay) s += `Verspätung ca. ${delay} Min.`
 
-    if(t['platform'] != t['scheduledPlatform']) {
-        if(s !== '') s += ' - '
+    if(t['isCancelled']) {
+        if(s !== '') s += ' - ';
+        s += 'Fahrt fällt aus!';
+        return s;
+    }
+
+    if(delay) {
+        if(s !== '') s += ' - ';
+        s += `Verspätung ca. ${delay} Min.`;
+    }
+
+    if(t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) {
+        if(s !== '') s += ' - ';
         s += 'Heute Gleis ' + t['platform']
     }
 
     if(!t['scheduledDeparture']) {
-        if(s !== '') s += ' - '
+        if(s !== '') s += ' - ';
         s += 'Bitte nicht einsteigen!';
     }
     return s;
@@ -185,7 +159,24 @@ function getDestination(t) {
 
 function setDepartures(d, p) {
     const departures = d.departures;
-    const filtered = departures.filter(e => e.scheduledPlatform == String(p));
+    departures.sort((e1, e2) => {
+        const dep1 = e1['scheduledDeparture'] ? e1['scheduledDeparture'].split(':') : e1['scheduledArrival'].split(':');
+        const dep2 = e2['scheduledDeparture'] ? e2['scheduledDeparture'].split(':') : e2['scheduledArrival'].split(':');
+        let dt1 = new Date();
+        let dt2 = new Date();
+        if(dt1.getHours >= 12 && dep1[0] < 12) dt1.setDate(dt1.getDate() + 1);
+        if(dt2.getHours >= 12 && dep2[0] < 12) dt2.setDate(dt2.getDate() + 1);
+        dt1.setHours(dep1[0], dep1[1], 0, 0);
+        dt2.setHours(dep2[0], dep2[1], 0, 0);
+
+        if(e1['scheduledDeparture']) dt1.setMinutes(dt1.getMinutes() + (e1['delayDeparture'] ? e1['delayDeparture'] : 0));
+        else dt1.setMinutes(dt1.getMinutes() + (e1['delayArrival'] ? e1['delayArrival'] : 0));
+        if(e2['scheduledDeparture']) dt2.setMinutes(dt2.getMinutes() + (e2['delayDeparture'] ? e2['delayDeparture'] : 0));
+        else dt2.setMinutes(dt2.getMinutes() + (e2['delayArrival'] ? e2['delayArrival'] : 0));
+        
+        return dt1 - dt2;
+    })
+    const filtered = departures.filter(e => e['platform'] == String(p) || e['scheduledPlatform'] == String(p));
     const t1 = filtered[0];
     const t2 = filtered[1];
     const t3 = filtered[2];
@@ -199,7 +190,7 @@ function setFolgezug(setFunction, t) {
     setFunction(    fixTrainNumber(t['train']),
                     t['scheduledDeparture'] ? String(t['destination']).substring(0, 19) : 'von ' + String(t['route'][0]['name']).substring(0, 15),
                     t['scheduledDeparture'] ? t['scheduledDeparture'] : t['scheduledArrival'],
-                    getDelay(t), t['platform'] != t['scheduledPlatform'] ? 'Gleis ' + t['platform'] : '');
+                    getDelay(t), t['platform'] != t['scheduledPlatform'] && t['platform'] != platform ? 'Gleis ' + t['platform'] : '');
 }
 
 function fixTrainNumber(train) {
@@ -232,7 +223,9 @@ function loadCookie() {
     const values = JSON.parse(json);
     if(values['station'] && values['platform']) {
         station = values['station'];
+        inputDs100.value = values['station'];
         platform = values['platform'];
+        inputPlatform.value = values['platform'];
     }
 }
 
@@ -244,6 +237,7 @@ async function update() {
         if(updateCounter >= 100.0) {
             updateCounter = 0.0;
             if(station && platform) fetchData(station, platform);
+            // if(platform) fetchMock(platform);
         }
         bar.setAttribute('style', `width: ${updateCounter}%;`);
         await sleep(30);
