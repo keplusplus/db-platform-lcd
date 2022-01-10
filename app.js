@@ -1,6 +1,8 @@
 let updateCounter;
 let station;
 let platform;
+let mock = false;
+let realisticDelay = true;
 
 const platformD = document.getElementById('p');
 const stops = document.getElementById('stops');
@@ -24,6 +26,9 @@ const bar = document.getElementById('bar');
 const inputDs100 = document.getElementById('input-ds100');
 const inputPlatform = document.getElementById('input-platform');
 const buttonUpdate = document.getElementById('button-update');
+
+const checkboxMock = document.getElementById('c-mock');
+const checkboxRealisticDelay = document.getElementById('c-realistic-delay');
 
 function setPlatform(p) {
     platformD.innerHTML = p;
@@ -105,17 +110,23 @@ function fetchData(station, platform) {
 } 
 
 function getDelay(t) {
-    if(t['scheduledDeparture']) {
-        if(t['delayDeparture'] && Math.round(t['delayDeparture'] / 5) > 0) {
-            return '+' + Math.round(t['delayDeparture'] / 5) * 5;
+    const delayString = delay => {
+        if(delay) {
+            if(realisticDelay && Math.round(delay / 5) > 0) {
+                return '+' + Math.round(delay / 5) * 5;
+            }
+            if(!realisticDelay) {
+                return '+' +delay;
+            }
         }
-    } else {
-        if(t['delayArrival'] && Math.round(t['delayArrival'] / 5) > 0) {
-            return '+' + Math.round(t['delayArrival'] / 5) * 5;
-        }
+        return '';
     }
 
-    return '';
+    if(t['scheduledDeparture']) {
+        return delayString(t['delayDeparture']);
+    } else {
+        return delayString(t['delayArrival']);
+    }
 }
 
 function getVias(via) {
@@ -212,10 +223,23 @@ function initForm() {
         updateCookie();
         updateCounter = 100;
     })
+
+    checkboxMock.checked = mock;
+    checkboxMock.addEventListener('change', () => {
+        mock = checkboxMock.checked;
+        updateCookie();
+        updateCounter = 100;
+    });
+    checkboxRealisticDelay.checked = realisticDelay;
+    checkboxRealisticDelay.addEventListener('change', () => {
+        realisticDelay = checkboxRealisticDelay.checked;
+        updateCookie();
+        updateCounter = 100;
+    });
 }
 
 function updateCookie() {
-    const values = { station, platform };
+    const values = { station, platform, mock, realisticDelay };
     const expiry = new Date();
     expiry.setMonth(expiry.getMonth() + 6);
     if(!station || !platform) expiry.setTime(0);
@@ -233,6 +257,9 @@ function loadCookie() {
         inputDs100.value = values['station'];
         platform = values['platform'];
         inputPlatform.value = values['platform'];
+
+        mock = values['mock'];
+        realisticDelay = values['realisticDelay'];
     }
 }
 
@@ -243,8 +270,10 @@ async function update() {
     while(true) {
         if(updateCounter >= 100.0) {
             updateCounter = 0.0;
-            if(station && platform) fetchData(station, platform);
-            // if(platform) fetchMock(platform);
+            if(platform) {
+                if(!mock && station) fetchData(station, platform);
+                else fetchMock(platform);
+            }
         }
         bar.setAttribute('style', `width: ${updateCounter}%;`);
         await sleep(30);
