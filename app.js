@@ -199,7 +199,7 @@ function setDepartures(d, p) {
 }
 
 function getFolgezugAnnotation(t) {
-    if(t['isCancelled']) return 'Gleis ' + t['platform'];
+    if(t['isCancelled']) return 'fällt aus';
     if(t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) return 'Gleis ' + t['platform'];
     return '';
 }
