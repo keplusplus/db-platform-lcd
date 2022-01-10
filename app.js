@@ -266,7 +266,7 @@ function loadCookie() {
 async function update() {
     initForm();
     setPlatform(platform ? platform : '');
-    updateCounter = 98.0;
+    updateCounter = 100.0;
     while(true) {
         if(updateCounter >= 100.0) {
             updateCounter = 0.0;
