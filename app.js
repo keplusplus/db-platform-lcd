@@ -151,7 +151,7 @@ function getAnnotationString(t) {
         s += `Verspätung ca. ${delay} Min.`;
     }
 
-    if(t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) {
+    if(platform == 0 || t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) {
         if(s !== '') s += ' - ';
         s += 'Heute Gleis ' + t['platform']
     }
@@ -188,7 +188,7 @@ function setDepartures(d, p) {
         
         return dt1 - dt2;
     })
-    const filtered = departures.filter(e => e['platform'] == String(p) || e['scheduledPlatform'] == String(p));
+    const filtered = departures.filter(e => platform == 0 || e['platform'] == String(p) || e['scheduledPlatform'] == String(p));
     const t1 = filtered[0];
     const t2 = filtered[1];
     const t3 = filtered[2];
@@ -200,7 +200,7 @@ function setDepartures(d, p) {
 
 function getFolgezugAnnotation(t) {
     if(t['isCancelled']) return 'fällt aus';
-    if(t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) return 'Gleis ' + t['platform'];
+    if(platform == 0 || t['platform'] != t['scheduledPlatform'] && t['platform'] != platform) return 'Gleis ' + t['platform'];
     return '';
 }
 
@@ -236,6 +236,18 @@ function initForm() {
         updateCookie();
         updateCounter = 100;
     });
+}
+
+function parseQuery() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlParams.entries());
+    
+    if(params['s'] && params['p']) {
+        station = params['s'];
+        platform = params['p'];
+
+        updateCookie();
+    }
 }
 
 function updateCookie() {
@@ -281,5 +293,6 @@ async function update() {
     }
 }
 
+parseQuery();
 loadCookie();
 update();
