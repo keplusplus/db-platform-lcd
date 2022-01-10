@@ -4,32 +4,32 @@
 }
 
 body {
-    margin: 0px;
+    margin: 0vw;
     /* font-family: lcd; */
     font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(20, 20, 20);
     color: rgb(240, 240, 240);
-    letter-spacing: -2px;
+    letter-spacing: -0.1vw;
 }
 
 p {
-    margin: 0px;
+    margin: 0vw;
 }
 
 .frame {
-    width: 1216px;
+    width: 101.333vw;
 }
 
 .container {
-    width: 1200px;
-    height: 480px;
-    padding: 8px;
+    width: 100vw;
+    height: 40vw;
+    padding: 0.667vw;
     background-color: rgb(0, 41, 131);
 }
 
 .upper, .lower {
-    width: 1200px;
-    height: 240px;
+    width: 100vw;
+    height: 20vw;
 }
 
 .upper {
@@ -37,15 +37,15 @@ p {
 }
 
 .lower {
-    font-size: 48px;
+    font-size: 4vw;
     display: grid;
-    grid-template-rows: 100px 10px 50px 20px 50px 10px;
+    grid-template-rows: 8.333vw 0.833vw 4.167vw 1.667vw 4.167vw 4.167vw;
     grid-template-columns: 14% 8% 18% 40% 20%;
 }
 
 .platform {
-    width: 250px;
-    font-size: 128px;
+    width: 20.833vw;
+    font-size: 10.667vw;
 }
 
 .destination {
@@ -57,33 +57,34 @@ p {
 }
 
 .annotations {
-    margin-bottom: 16px;
-    margin-right: 24px;
-    padding: 6px;
+    margin-bottom: 1.333vw;
+    margin-right: 2vw;
+    padding: 0.5vw;
 }
 
 .time-and-train {
     text-align: end;
+    padding-right: 1vw;
 }
 
 .depature-time {
-    font-size: 68px;
+    font-size: 5.667vw;
 }
 
 .train-number {
-    font-size: 36px;
+    font-size: 3vw;
 }
 
 .stops {
-    font-size: 36px;
+    font-size: 3vw;
 }
 
 .final-stop {
-    font-size: 72px;
+    font-size: 6vw;
 }
 
 .folgezuege {
-    font-size: 24px;
+    font-size: 2vw;
     display: flex;
     align-items: flex-end;
     grid-column-start:1; 
@@ -108,7 +109,7 @@ p {
 .annotation {
     color: rgb(0, 41, 131);
     justify-content: center;
-    font-size: 32px;
+    font-size: 2.667vw;
 }
 
 .bg-w {
@@ -116,54 +117,54 @@ p {
 }
 
 .bar {
-    height: 20px;
+    height: 1.667vw;
     background-color: gold;
 }
 
 .form {
     display: inline-block;
-    margin: 32px;
-    padding: 40px;
-    border-radius: 8px;
+    margin: 2.667vw;
+    padding: 3.333vw;
+    border-radius: 0.667vw;
     background-color: rgb(35, 35, 35);
 }
 
 .i-text {
     background-color: rgb(20, 20, 20);
-    border: 6px solid rgb(30, 30, 30);
-    border-radius: 12px;
+    border: 0.5vw solid rgb(30, 30, 30);
+    border-radius: 1vw;
     color: rgb(120, 120, 120);
-    font-size: 32px;
+    font-size: 2.667vw;
     text-transform: uppercase;
-    letter-spacing: 6px;
-    padding: 12px 16px 12px 16px;
+    letter-spacing: 0.5vw;
+    padding: 1vw 1.333vw 1vw 1.333vw;
 }
 
 .i-ds100 {
-    width: 160px;
-    margin-right: 30px;
+    width: 13.333vw;
+    margin-right: 2.5vw;
 }
 
 .i-platform {
-    width: 200px;
-    margin-right: 30px;
+    width: 16.667vw;
+    margin-right: 2.5vw;
 }
 
 .btn {
     background-color: rgb(29, 212, 69);
-    border: 6px solid rgb(48, 143, 68);
-    border-radius: 12px;
+    border: 0.5vw solid rgb(48, 143, 68);
+    border-radius: 1vw;
     color: white;
-    font-size: 32px;
-    padding: 12px 16px 12px 16px;
+    font-size: 2.667vw;
+    padding: 1vw 1.333vw 1vw 1.333vw;
 }
 
 .lower-form {
-    margin-top: 30px;
-    letter-spacing: 2px;
+    margin-top: 2.5vw;
+    letter-spacing: 0.167vw;
     color: rgb(120, 120, 120);
 }
 
 .lower-form label {
-    margin-right: 30px;
+    margin-right: 2.5vw;
 }
